@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         pdLoading = new ProgressDialog(this);
         pdLoading.setMax(100);
         pdLoading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // @rdhdia Added lines for better user information
+        pdLoading.setTitle("Connecting");
+        pdLoading.setMessage("Please wait...");
 
         projectList.clear();
 
@@ -91,61 +94,61 @@ public class MainActivity extends AppCompatActivity {
                 * Each key is a String and value may be different data types
              */
 
-                try {
-                    // Get the full HTTP Data as JSON
-                    JSONArray jArray;
-                    JSONObject jObject;
-                    JSONObject response;
-                    JSONObject data;
+            try {
+                // Get the full HTTP Data as JSON
+                JSONArray jArray;
+                JSONObject jObject;
+                JSONObject response;
+                JSONObject data;
 
-                    if (stream.charAt(0) == ('[')) {
-                        jArray = new JSONArray(stream);
+                if (stream.charAt(0) == ('[')) {
+                    jArray = new JSONArray(stream);
 
-                        String projectName;
-                        String desc;
+                    String projectName;
+                    String desc;
 
 
-                        if (jArray.length() > 0) {
-                            for (int i = 0; i < jArray.length(); i++) {
-                                data = jArray.getJSONObject(i);
-                                projectName = data.getString("name");
-                                desc = data.getString("description");
+                    if (jArray.length() > 0) {
+                        for (int i = 0; i < jArray.length(); i++) {
+                            data = jArray.getJSONObject(i);
+                            projectName = data.getString("name");
+                            desc = data.getString("description");
 
-                                if (desc.equals("null"))
-                                    desc = "";
+                            if (desc.equals("null"))
+                                desc = "";
 
-                                projectList.add(new ProjectCard(projectName, desc));
-                            }
-                            Intent i = new Intent(getApplicationContext(), UserDetailsActivity.class);
-                            i.putExtra("PROJECT_LIST", (Serializable) projectList);
-                            i.putExtra("USERNAME", (Serializable) username.toString());
-                            pdLoading.dismiss();
-                            startActivity(i);
-
-                        } else {
-                            Toast.makeText(getApplicationContext(), "User has no projects", Toast.LENGTH_LONG).show();
-                            projectList.clear();
-                            pdLoading.dismiss();
+                            projectList.add(new ProjectCard(projectName, desc));
                         }
+                        Intent i = new Intent(getApplicationContext(), UserDetailsActivity.class);
+                        i.putExtra("PROJECT_LIST", (Serializable) projectList);
+                        i.putExtra("USERNAME", (Serializable) username.toString());
+                        pdLoading.dismiss();
+                        startActivity(i);
 
                     } else {
-                        jObject = new JSONObject(stream);
-                        response = jObject.getJSONObject("message");
-
-
-                        if (response.equals("Not Found")) {
-                            Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_LONG).show();
-                            projectList.clear();
-                        }
+                        Toast.makeText(getApplicationContext(), "User has no projects", Toast.LENGTH_LONG).show();
+                        projectList.clear();
+                        pdLoading.dismiss();
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (NullPointerException e) {
-                    Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_LONG).show();
-                    projectList.clear();
-                    pdLoading.dismiss();
+                } else {
+                    jObject = new JSONObject(stream);
+                    response = jObject.getJSONObject("message");
+
+
+                    if (response.equals("Not Found")) {
+                        Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_LONG).show();
+                        projectList.clear();
+                    }
                 }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_LONG).show();
+                projectList.clear();
+                pdLoading.dismiss();
+            }
         }
 
     }

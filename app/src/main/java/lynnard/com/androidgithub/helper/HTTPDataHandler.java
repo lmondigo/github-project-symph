@@ -45,7 +45,14 @@ public class HTTPDataHandler {
             }
             else
             {
-                // Do something
+                /**
+                 * @author rdhdia
+                 *
+                 * In case webservice responseCode returns anything other than 200,
+                 * assume that the API call has failed and return a null stream
+                 *
+                 */
+                return null;
             }
         }catch (MalformedURLException e){
             e.printStackTrace();
