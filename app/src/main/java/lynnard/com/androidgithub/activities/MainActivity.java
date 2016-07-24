@@ -3,8 +3,8 @@ package lynnard.com.androidgithub.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,9 +18,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import lynnard.com.androidgithub.helper.HTTPDataHandler;
 import lynnard.com.androidgithub.R;
-import lynnard.com.androidgithub.models.ProjectCard;
+import lynnard.com.androidgithub.helper.HTTPDataHandler;
+import lynnard.com.androidgithub.models.ProjectDetails;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog pdLoading;
     private String username;
 
-    public List<ProjectCard> projectList = new ArrayList<>();
+    public List<ProjectDetails> projectList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +41,7 @@ public class MainActivity extends AppCompatActivity {
         searchUser = (Button) findViewById(R.id.bSearchUser);
         etUser = (EditText) findViewById(R.id.etUser);
         pdLoading = new ProgressDialog(this);
-        pdLoading.setMax(100);
         pdLoading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        // @rdhdia Added lines for better user information
         pdLoading.setTitle("Connecting");
         pdLoading.setMessage("Please wait...");
 
@@ -53,31 +51,24 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
                 username = etUser.getText().toString();
                 String link = FULL_URL + username + "/repos";
                 projectList.clear();
                 pdLoading.show();
                 MyAsyncTask getData = new MyAsyncTask();
                 getData.execute(link);
-
             }
         });
-
-
     }
 
     class MyAsyncTask extends AsyncTask<String, Void, String> {
 
-
         @Override
         protected String doInBackground(String... strings){
-            //String stream;
             String urlString = strings[0];
 
             HTTPDataHandler hh = new HTTPDataHandler();
             String stream = hh.GetHTTPData(urlString);
-
 
             // Return the data from specified url
             return stream;
@@ -96,52 +87,30 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 // Get the full HTTP Data as JSON
-                JSONArray jArray;
-                JSONObject jObject;
-                JSONObject response;
-                JSONObject data;
+                JSONArray jsonArray;
 
                 if (stream.charAt(0) == ('[')) {
-                    jArray = new JSONArray(stream);
+                    jsonArray = new JSONArray(stream);
 
-                    String projectName;
-                    String desc;
+                    List<ProjectDetails> projects = new ArrayList<>();
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        ProjectDetails details =
+                                convertToProjectDetails(jsonArray.getJSONObject(i));
+                        projects.add(details);
+                    }
 
-
-                    if (jArray.length() > 0) {
-                        for (int i = 0; i < jArray.length(); i++) {
-                            data = jArray.getJSONObject(i);
-                            projectName = data.getString("name");
-                            desc = data.getString("description");
-
-                            if (desc.equals("null"))
-                                desc = "";
-
-                            projectList.add(new ProjectCard(projectName, desc));
-                        }
+                    if (projects.size() > 0) {
                         Intent i = new Intent(getApplicationContext(), UserDetailsActivity.class);
-                        i.putExtra("PROJECT_LIST", (Serializable) projectList);
-                        i.putExtra("USERNAME", (Serializable) username.toString());
+                        i.putExtra("username", username);
+                        i.putExtra("projects", (Serializable) projects);
                         pdLoading.dismiss();
                         startActivity(i);
-
                     } else {
                         Toast.makeText(getApplicationContext(), "User has no projects", Toast.LENGTH_LONG).show();
                         projectList.clear();
                         pdLoading.dismiss();
                     }
-
-                } else {
-                    jObject = new JSONObject(stream);
-                    response = jObject.getJSONObject("message");
-
-
-                    if (response.equals("Not Found")) {
-                        Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_LONG).show();
-                        projectList.clear();
-                    }
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (NullPointerException e) {
@@ -150,7 +119,22 @@ public class MainActivity extends AppCompatActivity {
                 pdLoading.dismiss();
             }
         }
+    }
 
+    private ProjectDetails convertToProjectDetails(JSONObject jsonObject) {
+        try {
+            int id = jsonObject.getInt("id");
+            String name = jsonObject.getString("name");
+            String ownerName = jsonObject.getJSONObject("owner").getString("login");
+            String description = jsonObject.getString("description");
+            String language = jsonObject.getString("language");
+            int forksCount = jsonObject.getInt("forks_count");
+
+            return new ProjectDetails(id, name, ownerName,
+                    description, language, forksCount);
+        } catch (JSONException je) {
+            je.printStackTrace();
+        }
+        return null;
     }
 }
-

@@ -1,16 +1,19 @@
 package lynnard.com.androidgithub.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
+import lynnard.com.androidgithub.BuildConfig;
 import lynnard.com.androidgithub.R;
-import lynnard.com.androidgithub.models.ProjectCard;
+import lynnard.com.androidgithub.models.ProjectDetails;
 
 /**
  * Created by Lynnard on 7/22/2016.
@@ -19,10 +22,10 @@ import lynnard.com.androidgithub.models.ProjectCard;
 
 public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ProjectsAdapterViewHolder> {
 
-    private List<ProjectCard> projectsList;
+    private List<ProjectDetails> projectsList;
     private Context context;
 
-    public ProjectsAdapter(List<ProjectCard> projectsList, Context context) {
+    public ProjectsAdapter(List<ProjectDetails> projectsList, Context context) {
         this.projectsList = projectsList;
         this.context = context;
     }
@@ -36,9 +39,23 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.Projec
 
     @Override
     public void onBindViewHolder(ProjectsAdapterViewHolder holder, int position) {
-        ProjectCard card = projectsList.get(position);
-        holder.tvProjectName.setText(card.getTitle());
-        holder.tvDescription.setText(card.getDescription());
+        final ProjectDetails project = projectsList.get(position);
+        holder.tvProjectName.setText(project.getName());
+        holder.tvDescription.setText(project.getDescription());
+        if ( project.getDescription().equals("null") ) {
+            holder.tvDescription.setText("No description available");
+        }
+
+        holder.layoutDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setClassName(BuildConfig.APPLICATION_ID,
+                        BuildConfig.APPLICATION_ID + ".activities.ProjectDetailsActivity");
+                intent.putExtra("details", project);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -49,19 +66,13 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.Projec
     public static class ProjectsAdapterViewHolder extends RecyclerView.ViewHolder {
         protected TextView tvProjectName;
         protected TextView tvDescription;
+        protected LinearLayout layoutDetails;
 
         public ProjectsAdapterViewHolder(View v, final Context context) {
             super(v);
-
             tvProjectName = (TextView) v.findViewById(R.id.tvProjectName);
             tvDescription = (TextView) v.findViewById(R.id.tvDescription);
-
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //TODO open project
-                }
-            });
+            layoutDetails = (LinearLayout) v.findViewById(R.id.layoutDetails);
         }
     }
 

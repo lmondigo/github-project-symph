@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
 
 import lynnard.com.androidgithub.R;
 import lynnard.com.androidgithub.adapters.ProjectsAdapter;
-import lynnard.com.androidgithub.models.ProjectCard;
+import lynnard.com.androidgithub.models.ProjectDetails;
 
 /**
  * Created by Lynnard on 7/22/2016.
@@ -27,7 +26,7 @@ public class UserDetailsActivity extends AppCompatActivity {
 
     private RecyclerView userDetailsRecycler;
     public GridLayoutManager layoutManagerGrid;
-    public List<ProjectCard> projectList = new ArrayList<>();
+    public List<ProjectDetails> projectList = new ArrayList<>();
     public ProjectsAdapter adapter;
 
 
@@ -41,17 +40,20 @@ public class UserDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_details_activity);
 
+        // Set value of context
+        context = UserDetailsActivity.this;
+
         // Mapping the elements
         userDetailsRecycler = (RecyclerView) findViewById(R.id.project_list);
         tvUsername = (TextView) findViewById(R.id.tvUsername);
 
 
         // Setting the username
-        username =  getIntent().getExtras().getString("USERNAME");
+        username =  getIntent().getExtras().getString("username");
         tvUsername.setText(username);
 
         // Retrieving items for the list
-        projectList = (List<ProjectCard>) getIntent().getSerializableExtra("PROJECT_LIST");
+        projectList = (List<ProjectDetails>) getIntent().getSerializableExtra("projects");
 
         // Showing the list
         showList();
@@ -65,8 +67,5 @@ public class UserDetailsActivity extends AppCompatActivity {
         userDetailsRecycler.setLayoutManager(layoutManagerGrid);
         userDetailsRecycler.setAdapter(adapter);
     }
-
-
-
 
 }
