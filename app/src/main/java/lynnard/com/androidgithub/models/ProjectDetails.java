@@ -5,9 +5,6 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
-/**
- * Created by rdhdia on 24/07/2016.
- */
 public class ProjectDetails implements Serializable {
     private int id;
     private String name;

@@ -43,7 +43,7 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.Projec
         holder.tvProjectName.setText(project.getName());
         holder.tvDescription.setText(project.getDescription());
         if ( project.getDescription().equals("null") ) {
-            holder.tvDescription.setText("No description available");
+            holder.tvDescription.setText("Description: n/a");
         }
 
         holder.layoutDetails.setOnClickListener(new View.OnClickListener() {

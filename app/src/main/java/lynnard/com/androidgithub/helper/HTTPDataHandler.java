@@ -1,13 +1,14 @@
 package lynnard.com.androidgithub.helper;
 
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+
 
 /**
  * Created by Lynnard on 7/23/2016.
@@ -37,28 +38,21 @@ public class HTTPDataHandler {
                 while ((line = r.readLine()) != null) {
                     sb.append(line);
                 }
+
+                // End reading
                 stream = sb.toString();
-                // End reading...............
+
 
                 // Disconnect the HttpURLConnection
                 urlConnection.disconnect();
             }
             else
             {
-                /**
-                 * @author rdhdia
-                 *
-                 * In case webservice responseCode returns anything other than 200,
-                 * assume that the API call has failed and return a null stream
-                 *
-                 */
                 return null;
             }
-        }catch (MalformedURLException e){
+        }catch (Exception e){
             e.printStackTrace();
-        }catch(IOException e){
-            e.printStackTrace();
-        }finally {
+        } finally {
 
         }
         // Return the data from specified url

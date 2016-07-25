@@ -11,11 +11,11 @@ public class ProjectDetailsActivity extends AppCompatActivity {
 
     private ProjectDetails details;
 
-    private TextView username;
-    private TextView projectTitle;
-    private TextView projectDesc;
-    private TextView repoId;
-    private TextView language;
+    private TextView tvUsername;
+    private TextView tvProjectTitle;
+    private TextView tvProjectDesc;
+    private TextView tvRepoID;
+    private TextView tvLanguage;
     private TextView forks;
 
     @Override
@@ -26,11 +26,11 @@ public class ProjectDetailsActivity extends AppCompatActivity {
         // Retrieve project details
         details = (ProjectDetails) getIntent().getSerializableExtra("details");
 
-        username = (TextView) findViewById(R.id.lblUsername);
-        projectTitle = (TextView) findViewById(R.id.lblProjectTitle);
-        projectDesc = (TextView) findViewById(R.id.lblProjectDesc);
-        repoId = (TextView) findViewById(R.id.lblRepoId);
-        language = (TextView) findViewById(R.id.lblLanguage);
+        tvUsername = (TextView) findViewById(R.id.lblUsername);
+        tvProjectTitle = (TextView) findViewById(R.id.lblProjectTitle);
+        tvProjectDesc = (TextView) findViewById(R.id.lblProjectDesc);
+        tvRepoID = (TextView) findViewById(R.id.lblRepoId);
+        tvLanguage = (TextView) findViewById(R.id.lblLanguage);
         forks = (TextView) findViewById(R.id.lblForks);
     }
 
@@ -38,21 +38,22 @@ public class ProjectDetailsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        username.setText(details.getOwnerName());
-        projectTitle.setText(details.getName());
+        tvUsername.setText(details.getOwnerName());
+        tvProjectTitle.setText("Name: " + details.getName());
 
-        projectDesc.setText(details.getDescription());
+        tvProjectDesc.setText("Description: " + details.getDescription());
         if ( details.getDescription().equals("null") ) {
-            projectDesc.setText("No description available");
+            tvProjectDesc.setText("Description: n/a");
         }
 
-        repoId.setText(String.valueOf(details.getId()));
 
-        language.setText(details.getLanguage());
+        tvRepoID.setText("ID: " + String.valueOf(details.getId()));
+
+        tvLanguage.setText("Language: " + details.getLanguage());
         if ( details.getLanguage().equals("null") ) {
-            language.setText("No language set");
+            tvLanguage.setText("Language: n/a");
         }
 
-        forks.setText(String.valueOf(details.getForksCount()));
+        forks.setText("Forks: " + String.valueOf(details.getForksCount()));
     }
 }
